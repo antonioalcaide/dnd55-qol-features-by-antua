@@ -4,8 +4,8 @@
   "description": "Mejoras de calidad de vida para DnD 5e / 5.5e.",
   "version": "1.0.0",
   "compatibility": {
-    "minimum": "11",
-    "verified": "12"
+    "minimum": "14",
+    "verified": "14"
   },
   "authors": [
     {
