@@ -1,51 +1,111 @@
-"packs": [
-  {
-    "name": "clases",
-    "label": "Clases",
-    "type": "Item",
-    "system": "dnd5e",
-    "path": "packs/clases"
+{
+  "id": "dnd55-qol-features-by-antua",
+  "title": "DnD 5.5 QoL Features by Antua",
+  "description": "Mejoras de calidad de vida y compendios organizados para DnD 5e / 5.5e.",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "11",
+    "verified": "14"
   },
-  {
-    "name": "trasfondos",
-    "label": "Trasfondos",
-    "type": "Item",
-    "system": "dnd5e",
-    "path": "packs/trasfondos"
+  "authors": [
+    {
+      "name": "Antua"
+    }
+  ],
+  "esmodules": [
+    "main.js"
+  ],
+  "styles": [
+    "styles/module.css"
+  ],
+  "media": [
+    {
+      "type": "banner",
+      "url": "assets/banner.webp"
+    }
+  ],
+  "relationships": {
+    "systems": [
+      {
+        "id": "dnd5e",
+        "type": "system"
+      }
+    ]
   },
-  {
-    "name": "dotes",
-    "label": "Dotes",
-    "type": "Item",
-    "system": "dnd5e",
-    "path": "packs/dotes"
-  },
-  {
-    "name": "conjuros",
-    "label": "Conjuros",
-    "type": "Item",
-    "system": "dnd5e",
-    "path": "packs/conjuros"
-  },
-  {
-    "name": "objetos",
-    "label": "Objetos",
-    "type": "Item",
-    "system": "dnd5e",
-    "path": "packs/objetos"
-  },
-  {
-    "name": "miscelaneo",
-    "label": "Misceláneo",
-    "type": "JournalEntry",
-    "system": "dnd5e",
-    "path": "packs/miscelaneo"
-  },
-  {
-    "name": "npcs",
-    "label": "NPCs",
-    "type": "Actor",
-    "system": "dnd5e",
-    "path": "packs/npcs"
-  }
-]
+  "packs": [
+    {
+      "name": "clases",
+      "label": "Clases",
+      "type": "Item",
+      "system": "dnd5e",
+      "path": "packs/clases"
+    },
+    {
+      "name": "trasfondos",
+      "label": "Trasfondos",
+      "type": "Item",
+      "system": "dnd5e",
+      "path": "packs/trasfondos"
+    },
+    {
+      "name": "dotes",
+      "label": "Dotes",
+      "type": "Item",
+      "system": "dnd5e",
+      "path": "packs/dotes"
+    },
+    {
+      "name": "conjuros",
+      "label": "Conjuros",
+      "type": "Item",
+      "system": "dnd5e",
+      "path": "packs/conjuros"
+    },
+    {
+      "name": "objetos",
+      "label": "Objetos",
+      "type": "Item",
+      "system": "dnd5e",
+      "path": "packs/objetos"
+    },
+    {
+      "name": "miscelaneo",
+      "label": "Misceláneo",
+      "type": "Item",
+      "system": "dnd5e",
+      "path": "packs/miscelaneo"
+    },
+    {
+      "name": "npcs",
+      "label": "NPCs",
+      "type": "Actor",
+      "system": "dnd5e",
+      "path": "packs/npcs"
+    },
+    {
+      "name": "macros",
+      "label": "Macros",
+      "type": "Macro",
+      "system": "dnd5e",
+      "path": "packs/macros"
+    }
+  ],
+  "packFolders": [
+    {
+      "name": "DnD 5.5 QoL Features by Antua",
+      "color": "#6d9923",
+      "packs": [
+        "clases",
+        "trasfondos",
+        "dotes",
+        "conjuros",
+        "objetos",
+        "miscelaneo",
+        "npcs",
+        "macros"
+      ]
+    }
+  ],
+  "manifest": "https://raw.githubusercontent.com/antonioalcaide/dnd55-qol-features-by-antua/main/module.json",
+  "download": "https://github.com/antonioalcaide/dnd55-qol-features-by-antua/releases/download/v1.0.0/module.zip"
+}

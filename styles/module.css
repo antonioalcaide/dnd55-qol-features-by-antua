@@ -1,0 +1,9 @@
+.directory-list .folder[data-folder-id="dnd55_qol_folder"] > .folder-header,
+.directory-list .folder[data-folder-name="DnD 5.5 QoL Features"] > .folder-header {
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url('../assets/banner.webp') center/cover no-repeat;
+  color: #ffffff;
+  text-shadow: 0 0 5px #000000;
+  border: 1px solid #4BC470;
+  border-radius: 4px;
+  padding: 6px;
+}
