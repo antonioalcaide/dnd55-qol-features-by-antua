@@ -1,12 +1,12 @@
-name: Automatic Release Creation
+name: 100% Automated Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -14,31 +14,44 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Update module.json Version and Download URL
-        env:
-          TAG_NAME: ${{ github.ref_name }}
+      - name: Auto Bump Version and Update module.json
         run: |
+          # Obtener el último tag o usar v0.1.0 si no existe ninguno
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.1.0")
+
+          # Extraer Major, Minor y Patch
+          RAW_VERSION=${LATEST_TAG#v}
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$RAW_VERSION"
+
+          # Incrementar automáticamente el Patch (ej. 0.1.0 -> 0.1.1)
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+          NEW_TAG="v$NEW_VERSION"
+
+          echo "TAG_NAME=$NEW_TAG" >> $GITHUB_ENV
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+          # Actualizar module.json en caliente
           node -e "
             const fs = require('fs');
-            const tag = process.env.TAG_NAME;
-            const version = tag.replace(/^v/, '');
-            const manifest = JSON.parse(fs.readFileSync('module.json'));
-
-            manifest.version = version;
-            manifest.download = \`https://github.com/\${process.env.GITHUB_REPOSITORY}/releases/download/\${tag}/module.zip\`;
-
-            fs.writeFileSync('module.json', JSON.stringify(manifest, null, 2));
-            console.log(\`module.json actualizado automáticamente a la versión \${version} para el tag \${tag}\`);
+            const m = JSON.parse(fs.readFileSync('module.json'));
+            m.version = '$NEW_VERSION';
+            m.download = \`https://github.com/\${process.env.GITHUB_REPOSITORY}/releases/download/$NEW_TAG/module.zip\`;
+            fs.writeFileSync('module.json', JSON.stringify(m, null, 2));
           "
 
-      - name: Create Module Zip
+      - name: Create Zip Package
         run: |
           zip -r ./module.zip . -x "*.git*" "*.github*" "*.LOCK" ".gitignore" ".gitattributes"
 
-      - name: Create GitHub Release
+      - name: Publish Release & Tag Automatically
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.TAG_NAME }}
+          name: Release ${{ env.TAG_NAME }}
           files: |
             module.json
             module.zip
