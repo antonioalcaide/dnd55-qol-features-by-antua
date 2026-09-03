@@ -1,4 +1,4 @@
-name: Release Module
+name: Release Creation
 
 on:
   push:
@@ -10,17 +10,20 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Create Module Zip
         run: |
-          zip -r module.zip . -x "*.git*" ".github*"
+          zip -r ./module.zip . -x "*.git*" "*.github*" "*.LOCK" ".gitignore" ".gitattributes"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: module.zip
+          files: |
+            module.json
+            module.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
