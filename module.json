@@ -1,22 +1,51 @@
-{
-  "id": "dnd55-qol-features-by-antua",
-  "title": "DnD 5.5 QoL Features by Antua",
-  "description": "Mejoras de calidad de vida para DnD 5e / 5.5e.",
-  "version": "1.0.0",
-  "compatibility": {
-    "minimum": "11",
-    "verified": "14"
+"packs": [
+  {
+    "name": "clases",
+    "label": "Clases",
+    "type": "Item",
+    "system": "dnd5e",
+    "path": "packs/clases"
   },
-  "authors": [
-    {
-      "name": "Antua",
-      "flags": {}
-    }
-  ],
-  "esmodules": [
-    "main.js"
-  ],
-  "manifest": "https://raw.githubusercontent.com/antonioalcaide/dnd55-qol-features-by-antua/main/module.json",
-  "download": "https://github.com/antonioalcaide/dnd55-qol-features-by-antua/releases/download/v1.0.0/module.zip",
-  "flags": {}
-}
+  {
+    "name": "trasfondos",
+    "label": "Trasfondos",
+    "type": "Item",
+    "system": "dnd5e",
+    "path": "packs/trasfondos"
+  },
+  {
+    "name": "dotes",
+    "label": "Dotes",
+    "type": "Item",
+    "system": "dnd5e",
+    "path": "packs/dotes"
+  },
+  {
+    "name": "conjuros",
+    "label": "Conjuros",
+    "type": "Item",
+    "system": "dnd5e",
+    "path": "packs/conjuros"
+  },
+  {
+    "name": "objetos",
+    "label": "Objetos",
+    "type": "Item",
+    "system": "dnd5e",
+    "path": "packs/objetos"
+  },
+  {
+    "name": "miscelaneo",
+    "label": "Misceláneo",
+    "type": "JournalEntry",
+    "system": "dnd5e",
+    "path": "packs/miscelaneo"
+  },
+  {
+    "name": "npcs",
+    "label": "NPCs",
+    "type": "Actor",
+    "system": "dnd5e",
+    "path": "packs/npcs"
+  }
+]
