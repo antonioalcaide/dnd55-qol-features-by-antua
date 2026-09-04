@@ -2,7 +2,7 @@
   "id": "dnd55-qol-features-by-antua",
   "title": "DnD 5.5 QoL Features by Antua",
   "description": "Mejoras de calidad de vida y compendios organizados para DnD 5e / 5.5e.",
-  "version": "0.0.0",
+  "version": "0.0.5",
   "compatibility": {
     "minimum": "11",
     "verified": "14"
@@ -106,6 +106,6 @@
       ]
     }
   ],
-  "manifest": "https://github.com/antonioalcaide/dnd55-qol-features-by-antua/releases/latest/download/module.json",
-  "download": "https://github.com/antonioalcaide/dnd55-qol-features-by-antua/releases/latest/download/module.zip"
+  "manifest": "https://raw.githubusercontent.com/antonioalcaide/dnd55-qol-features-by-antua/main/module.json",
+  "download": "https://github.com/antonioalcaide/dnd55-qol-features-by-antua/releases/download/v0.0.5/module.zip"
 }
