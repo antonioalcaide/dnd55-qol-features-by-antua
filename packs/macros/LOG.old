@@ -1,5 +1,5 @@
-2026/09/04-00:49:33.059 3b9c Delete type=3 #1
-2026/09/04-00:52:32.991 44e0 Level-0 table #5: started
-2026/09/04-00:52:32.991 44e0 Level-0 table #5: 0 bytes OK
-2026/09/04-00:52:32.993 44e0 Delete type=0 #3
-2026/09/04-00:52:32.996 44e0 Manual compaction at level-0 from 'undefined' @ 72057594037927935 : 1 .. 'undefined' @ 0 : 0; will stop at (end)
+2026/09/04-18:47:39.870 18b68 Log #8: 0 ops saved to Table #10 OK
+2026/09/04-18:47:39.870 18b68 Archiving ..\Data\modules\dnd55-qol-features-by-antua\packs\macros/000008.log: OK
+2026/09/04-18:47:39.871 18b68 Table #9: 2 entries OK
+2026/09/04-18:47:39.873 18b68 Archiving ..\Data\modules\dnd55-qol-features-by-antua\packs\macros/MANIFEST-000006: OK
+2026/09/04-18:47:39.875 18b68 **** Repaired leveldb ..\Data\modules\dnd55-qol-features-by-antua\packs\macros; recovered 1 files; 4530 bytes. Some data may have been lost. ****

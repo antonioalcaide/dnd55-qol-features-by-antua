@@ -1,7 +1,5 @@
-2026/09/04-00:49:33.026 18b3c Recovering log #80
-2026/09/04-00:49:33.030 18b3c Delete type=0 #80
-2026/09/04-00:49:33.030 18b3c Delete type=3 #78
-2026/09/04-00:52:32.987 44e0 Level-0 table #85: started
-2026/09/04-00:52:32.987 44e0 Level-0 table #85: 0 bytes OK
-2026/09/04-00:52:32.988 44e0 Delete type=0 #83
-2026/09/04-00:52:32.989 44e0 Manual compaction at level-0 from 'undefined' @ 72057594037927935 : 1 .. 'undefined' @ 0 : 0; will stop at (end)
+2026/09/04-18:47:39.754 1aa9c Log #88: 0 ops saved to Table #90 OK
+2026/09/04-18:47:39.755 1aa9c Archiving ..\Data\modules\dnd55-qol-features-by-antua\packs\miscelaneo/000088.log: OK
+2026/09/04-18:47:39.755 1aa9c Table #89: 28 entries OK
+2026/09/04-18:47:39.758 1aa9c Archiving ..\Data\modules\dnd55-qol-features-by-antua\packs\miscelaneo/MANIFEST-000086: OK
+2026/09/04-18:47:39.831 1aa9c **** Repaired leveldb ..\Data\modules\dnd55-qol-features-by-antua\packs\miscelaneo; recovered 1 files; 45698 bytes. Some data may have been lost. ****
