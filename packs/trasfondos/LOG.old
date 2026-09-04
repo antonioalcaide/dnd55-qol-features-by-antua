@@ -1,4 +1,7 @@
-2026/09/04-18:47:39.585 1ba94 Log #88: 0 ops saved to Table #89 OK
-2026/09/04-18:47:39.585 1ba94 Archiving ..\Data\modules\dnd55-qol-features-by-antua\packs\trasfondos/000088.log: OK
-2026/09/04-18:47:39.587 1ba94 Archiving ..\Data\modules\dnd55-qol-features-by-antua\packs\trasfondos/MANIFEST-000086: OK
-2026/09/04-18:47:39.591 1ba94 **** Repaired leveldb ..\Data\modules\dnd55-qol-features-by-antua\packs\trasfondos; recovered 0 files; 0 bytes. Some data may have been lost. ****
+2026/09/04-19:05:13.328 1aa9c Recovering log #104
+2026/09/04-19:05:13.333 1aa9c Delete type=0 #104
+2026/09/04-19:05:13.333 1aa9c Delete type=3 #102
+2026/09/05-00:06:56.917 1a37c Level-0 table #109: started
+2026/09/05-00:06:56.918 1a37c Level-0 table #109: 0 bytes OK
+2026/09/05-00:06:56.920 1a37c Delete type=0 #107
+2026/09/05-00:06:56.929 1a37c Manual compaction at level-0 from 'undefined' @ 72057594037927935 : 1 .. 'undefined' @ 0 : 0; will stop at (end)

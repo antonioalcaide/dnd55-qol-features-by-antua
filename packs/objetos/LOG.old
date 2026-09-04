@@ -1,5 +1,14 @@
-2026/09/04-18:47:39.730 18b68 Log #88: 0 ops saved to Table #90 OK
-2026/09/04-18:47:39.732 18b68 Archiving ..\Data\modules\dnd55-qol-features-by-antua\packs\objetos/000088.log: OK
-2026/09/04-18:47:39.732 18b68 Table #89: 19 entries OK
-2026/09/04-18:47:39.734 18b68 Archiving ..\Data\modules\dnd55-qol-features-by-antua\packs\objetos/MANIFEST-000086: OK
-2026/09/04-18:47:39.737 18b68 **** Repaired leveldb ..\Data\modules\dnd55-qol-features-by-antua\packs\objetos; recovered 1 files; 39065 bytes. Some data may have been lost. ****
+2026/09/04-19:05:13.358 18b68 Recovering log #106
+2026/09/04-19:05:13.364 18b68 Delete type=0 #106
+2026/09/04-19:05:13.364 18b68 Delete type=3 #104
+2026/09/05-00:06:56.920 1a37c Level-0 table #111: started
+2026/09/05-00:06:56.924 1a37c Level-0 table #111: 28646 bytes OK
+2026/09/05-00:06:56.927 1a37c Delete type=0 #109
+2026/09/05-00:06:56.929 1a37c Manual compaction at level-0 from '!folders!JI3JtqmJl1sYzKdl' @ 72057594037927935 : 1 .. '!items.effects!g9gou6XG1PRPokNp.SMLsAw183cKuaqhh' @ 0 : 0; will stop at '!items.effects!W37QKtXNG9DbzuNV.ZLls8fNOtupajmjL' @ 20 : 1
+2026/09/05-00:06:56.929 1a37c Compacting 1@0 + 1@1 files
+2026/09/05-00:06:56.933 1a37c Generated table #112@0: 11 keys, 17292 bytes
+2026/09/05-00:06:56.933 1a37c Compacted 1@0 + 1@1 files => 17292 bytes
+2026/09/05-00:06:56.934 1a37c compacted to: files[ 0 1 0 0 0 0 0 ]
+2026/09/05-00:06:56.935 1a37c Delete type=2 #95
+2026/09/05-00:06:56.935 1a37c Delete type=2 #111
+2026/09/05-00:06:56.944 1a37c Manual compaction at level-0 from '!items.effects!W37QKtXNG9DbzuNV.ZLls8fNOtupajmjL' @ 20 : 1 .. '!items.effects!g9gou6XG1PRPokNp.SMLsAw183cKuaqhh' @ 0 : 0; will stop at (end)

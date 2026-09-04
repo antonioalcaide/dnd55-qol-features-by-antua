@@ -1,5 +1,7 @@
-2026/09/04-18:47:39.848 1bae4 Log #88: 0 ops saved to Table #90 OK
-2026/09/04-18:47:39.848 1bae4 Archiving ..\Data\modules\dnd55-qol-features-by-antua\packs\npcs/000088.log: OK
-2026/09/04-18:47:39.849 1bae4 Table #89: 84 entries OK
-2026/09/04-18:47:39.852 1bae4 Archiving ..\Data\modules\dnd55-qol-features-by-antua\packs\npcs/MANIFEST-000086: OK
-2026/09/04-18:47:39.854 1bae4 **** Repaired leveldb ..\Data\modules\dnd55-qol-features-by-antua\packs\npcs; recovered 1 files; 177442 bytes. Some data may have been lost. ****
+2026/09/04-19:05:13.379 1bae4 Recovering log #106
+2026/09/04-19:05:13.383 1bae4 Delete type=0 #106
+2026/09/04-19:05:13.384 1bae4 Delete type=3 #104
+2026/09/05-00:06:56.957 1a37c Level-0 table #111: started
+2026/09/05-00:06:56.957 1a37c Level-0 table #111: 0 bytes OK
+2026/09/05-00:06:56.959 1a37c Delete type=0 #109
+2026/09/05-00:06:56.961 1a37c Manual compaction at level-0 from '!actors!7OfJadzFsrqe6vQx' @ 72057594037927935 : 1 .. '!actors.items.effects!VbDPhfNcmjLLIQHd.MKsd8jIhdH7Gl06W.XAJiw9N38Z1nd8ni' @ 0 : 0; will stop at (end)

@@ -3,6 +3,7 @@
   "title": "DnD 5.5 QoL Features by Antua",
   "description": "Mejoras de calidad de vida y compendios organizados para DnD 5e / 5.5e.",
   "version": "0.0.0",
+  "socket": true,
   "compatibility": {
     "minimum": "11",
     "verified": "14"
@@ -30,7 +31,13 @@
         "id": "dnd5e",
         "type": "system"
       }
-    ]
+    ],
+    "requires": [
+    {
+      "id": "socketlib",
+      "type": "module"
+    }
+  ]
   },
   "packs": [
     {
