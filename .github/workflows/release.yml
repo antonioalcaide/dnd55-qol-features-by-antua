@@ -1,9 +1,9 @@
-name: Clean Automated Release
+name: Tag-Driven Automated Release
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'
 
 jobs:
   release:
@@ -14,40 +14,34 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Auto Bump Version and Build Manifest
+      - name: Update module.json Version and Download URL
+        env:
+          TAG_NAME: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
         run: |
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          RAW_VERSION=${LATEST_TAG#v}
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$RAW_VERSION"
-          NEW_PATCH=$((PATCH + 1))
-          NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
-          NEW_TAG="v$NEW_VERSION"
-
-          echo "TAG_NAME=$NEW_TAG" >> $GITHUB_ENV
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-
           node -e "
             const fs = require('fs');
+            const tag = process.env.TAG_NAME;
+            const repo = process.env.REPO;
+            const version = tag.replace(/^v/, '');
             const m = JSON.parse(fs.readFileSync('module.json'));
-            m.version = '$NEW_VERSION';
-            m.manifest = \`https://github.com/\${process.env.GITHUB_REPOSITORY}/releases/latest/download/module.json\`;
-            m.download = \`https://github.com/\${process.env.GITHUB_REPOSITORY}/releases/download/$NEW_TAG/module.zip\`;
+
+            m.version = version;
+            m.manifest = \`https://github.com/\${repo}/releases/latest/download/module.json\`;
+            m.download = \`https://github.com/\${repo}/releases/download/\${tag}/module.zip\`;
+
             fs.writeFileSync('module.json', JSON.stringify(m, null, 2));
+            console.log(\`module.json actualizado automáticamente a v\${version}\`);
           "
 
       - name: Create Zip Package
         run: |
           zip -r ./module.zip . -x "*.git*" "*.github*" "*.LOCK" ".gitignore" ".gitattributes"
 
-      - name: Publish Release & Tag Automatically
+      - name: Publish Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.TAG_NAME }}
-          name: ${{ env.TAG_NAME }}
-          make_latest: true
           files: |
             module.json
             module.zip
