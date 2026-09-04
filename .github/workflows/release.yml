@@ -11,51 +11,51 @@ jobs:
     permissions:
       contents: write
 
-steps:
-  - name: Checkout repository
-    uses: actions/checkout@v4
-    with:
-      fetch-depth: 0
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-  - name: Auto Bump Version and Update module.json
-    run: |
-      LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-      RAW_VERSION=${LATEST_TAG#v}
-      IFS='.' read -r MAJOR MINOR PATCH <<< "$RAW_VERSION"
-      NEW_PATCH=$((PATCH + 1))
-      NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
-      NEW_TAG="v$NEW_VERSION"
+      - name: Auto Bump Version and Update module.json
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          RAW_VERSION=${LATEST_TAG#v}
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$RAW_VERSION"
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+          NEW_TAG="v$NEW_VERSION"
 
-      echo "TAG_NAME=$NEW_TAG" >> $GITHUB_ENV
-      echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "TAG_NAME=$NEW_TAG" >> $GITHUB_ENV
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
-      node -e "
-        const fs = require('fs');
-        const m = JSON.parse(fs.readFileSync('module.json'));
-        m.version = '$NEW_VERSION';
-        m.download = \`https://github.com/\${process.env.GITHUB_REPOSITORY}/releases/download/$NEW_TAG/module.zip\`;
-        fs.writeFileSync('module.json', JSON.stringify(m, null, 2));
-      "
+          node -e "
+            const fs = require('fs');
+            const m = JSON.parse(fs.readFileSync('module.json'));
+            m.version = '$NEW_VERSION';
+            m.download = \`https://github.com/\${process.env.GITHUB_REPOSITORY}/releases/download/$NEW_TAG/module.zip\`;
+            fs.writeFileSync('module.json', JSON.stringify(m, null, 2));
+          "
 
-  - name: Commit updated module.json back to main
-    run: |
-      git config user.name "github-actions[bot]"
-      git config user.email "github-actions[bot]@users.noreply.github.com"
-      git add module.json
-      git commit -m "chore: bump version to ${{ env.NEW_VERSION }} [skip ci]" || echo "No changes to commit"
-      git push origin main
+      - name: Commit updated module.json back to main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add module.json
+          git commit -m "chore: bump version to ${{ env.NEW_VERSION }} [skip ci]" || echo "No changes to commit"
+          git push origin main
 
-  - name: Create Zip Package
-    run: |
-      zip -r ./module.zip . -x "*.git*" "*.github*" "*.LOCK" ".gitignore" ".gitattributes"
+      - name: Create Zip Package
+        run: |
+          zip -r ./module.zip . -x "*.git*" "*.github*" "*.LOCK" ".gitignore" ".gitattributes"
 
-  - name: Publish Release & Tag Automatically
-    uses: softprops/action-gh-release@v2
-    with:
-      tag_name: ${{ env.TAG_NAME }}
-      name: Release ${{ env.TAG_NAME }}
-      files: |
-        module.json
-        module.zip
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish Release & Tag Automatically
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          name: Release ${{ env.TAG_NAME }}
+          files: |
+            module.json
+            module.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
