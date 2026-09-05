@@ -120,3 +120,8 @@ function registrarSocketAntua() {
 
 Hooks.once("socketlib.ready", registrarSocketAntua);
 Hooks.once("ready", registrarSocketAntua);
+
+/*
+Lista la versión V0.0.11
+- Conjuro luz modificado y controlado.
+*/
