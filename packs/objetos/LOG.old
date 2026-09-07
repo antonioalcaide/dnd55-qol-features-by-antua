@@ -1,14 +1,14 @@
-2026/09/07-13:13:22.910 15af8 Recovering log #119
-2026/09/07-13:13:22.916 15af8 Delete type=0 #119
-2026/09/07-13:13:22.916 15af8 Delete type=3 #117
-2026/09/07-13:15:37.403 132b8 Level-0 table #124: started
-2026/09/07-13:15:37.406 132b8 Level-0 table #124: 13668 bytes OK
-2026/09/07-13:15:37.407 132b8 Delete type=0 #122
-2026/09/07-13:15:37.408 132b8 Manual compaction at level-0 from '!folders!6cJEmDoCky77k1uI' @ 72057594037927935 : 1 .. '!items.effects!j92OJzGXfHFiKESu.ijz0GKBCqhCT3fbX' @ 0 : 0; will stop at '!items.effects!j92OJzGXfHFiKESu.ijz0GKBCqhCT3fbX' @ 39 : 1
-2026/09/07-13:15:37.408 132b8 Compacting 1@0 + 1@1 files
-2026/09/07-13:15:37.411 132b8 Generated table #125@0: 20 keys, 23731 bytes
-2026/09/07-13:15:37.411 132b8 Compacted 1@0 + 1@1 files => 23731 bytes
-2026/09/07-13:15:37.413 132b8 compacted to: files[ 0 1 0 0 0 0 0 ]
-2026/09/07-13:15:37.413 132b8 Delete type=2 #112
-2026/09/07-13:15:37.413 132b8 Delete type=2 #124
-2026/09/07-13:15:37.418 132b8 Manual compaction at level-0 from '!items.effects!j92OJzGXfHFiKESu.ijz0GKBCqhCT3fbX' @ 39 : 1 .. '!items.effects!j92OJzGXfHFiKESu.ijz0GKBCqhCT3fbX' @ 0 : 0; will stop at (end)
+2026/09/07-13:16:07.255 15af8 Recovering log #123
+2026/09/07-13:16:07.255 15af8 Delete type=0 #123
+2026/09/07-13:16:07.255 15af8 Delete type=3 #121
+2026/09/07-13:35:07.261 132b8 Level-0 table #129: started
+2026/09/07-13:35:07.264 132b8 Level-0 table #129: 6784 bytes OK
+2026/09/07-13:35:07.266 132b8 Delete type=0 #127
+2026/09/07-13:35:07.267 132b8 Manual compaction at level-0 from '!folders!6cJEmDoCky77k1uI' @ 72057594037927935 : 1 .. '!items.effects!j92OJzGXfHFiKESu.ijz0GKBCqhCT3fbX' @ 0 : 0; will stop at '!items.effects!j92OJzGXfHFiKESu.ijz0GKBCqhCT3fbX' @ 45 : 1
+2026/09/07-13:35:07.267 132b8 Compacting 1@0 + 1@1 files
+2026/09/07-13:35:07.271 132b8 Generated table #130@0: 20 keys, 23747 bytes
+2026/09/07-13:35:07.271 132b8 Compacted 1@0 + 1@1 files => 23747 bytes
+2026/09/07-13:35:07.273 132b8 compacted to: files[ 0 1 0 0 0 0 0 ]
+2026/09/07-13:35:07.273 132b8 Delete type=2 #125
+2026/09/07-13:35:07.273 132b8 Delete type=2 #129
+2026/09/07-13:35:07.276 132b8 Manual compaction at level-0 from '!items.effects!j92OJzGXfHFiKESu.ijz0GKBCqhCT3fbX' @ 45 : 1 .. '!items.effects!j92OJzGXfHFiKESu.ijz0GKBCqhCT3fbX' @ 0 : 0; will stop at (end)
