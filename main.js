@@ -1,7 +1,66 @@
 Hooks.once('init', () => {
-  //console.log("%cdnd5.5-qol-features-by-antua | Módulo inicializado con éxito", "color: red; font-size: 20px; background-color: yellow;"); 
     console.log('%cdnd5.5-qol-features-by-antua %c| ' + 'Módulo inicializado con éxito', 'color:#4BC470', 'color:#B3B3B3');
 });
+
+// Función de diálogo con temporizador de 20 segundos
+async function pedirConfirmacionReaccionEscudo(actorName) {
+    return new Promise((resolve) => {
+        let resolved = false;
+        let timer = null;
+        let interval = null;
+
+        const doResolve = (val) => {
+            if (resolved) return;
+            resolved = true;
+            if (timer) clearTimeout(timer);
+            if (interval) clearInterval(interval);
+            resolve(val);
+        };
+
+        const promptTitle = "Interponer Escudo";
+        const promptContent = `
+            <div style="text-align: center; padding: 4px;">
+                <p><strong>${actorName}</strong> ha superado la salvación de Destreza llevando un escudo.</p>
+                <p>¿Deseas gastar tu <strong>Reacción</strong> para no recibir ningún daño?</p>
+                <p style="font-size: 0.85em; color: #a0a0a0; margin-top: 8px;">
+                    Tiempo para responder: <strong id="escudo-timer-count" style="color: #e24f4f;">20</strong>s
+                </p>
+            </div>
+        `;
+
+        let timeLeft = 20;
+        timer = setTimeout(() => {
+            if (dlg) dlg.close();
+            doResolve(false);
+        }, 20000);
+
+        interval = setInterval(() => {
+            timeLeft--;
+            const el = document.getElementById("escudo-timer-count");
+            if (el) el.innerText = timeLeft;
+            if (timeLeft <= 0) clearInterval(interval);
+        }, 1000);
+
+        const dlg = new Dialog({
+            title: promptTitle,
+            content: promptContent,
+            buttons: {
+                yes: { 
+                    label: "Usar Reacción", 
+                    callback: () => doResolve(true) 
+                },
+                no: { 
+                    label: "No usar", 
+                    callback: () => doResolve(false) 
+                }
+            },
+            default: "yes",
+            close: () => doResolve(false)
+        });
+
+        dlg.render(true);
+    });
+}
 
 function registrarSocketAntua() {
     if (typeof socketlib === "undefined") return;
@@ -13,12 +72,7 @@ function registrarSocketAntua() {
     }
 
     if (globalThis.antuaQolSocket && !globalThis.antuaQolRegistered) {
-        // =========================================================================
-        // HOOK UNIFICADO: MOVER TOKEN (EMPUJAR / ATRAER)
-        // -------------------------------------------------------------------------
-        // - distanciaPies > 0 : EMPUJA (Desplaza al objetivo en dirección opuesta)
-        // - distanciaPies < 0 : ATRAE  (Trae al objetivo hacia el origen)
-        // =========================================================================
+        // 1. Registro de Desplazamiento
         globalThis.antuaQolSocket.register("moverTokenDesplazamientoGM", async (originUuid, targetUuid, distanciaPies = 5) => {
             const originDoc = await fromUuid(originUuid);
             const targetDoc = await fromUuid(targetUuid);
@@ -30,12 +84,10 @@ function registrarSocketAntua() {
 
             if (!originToken || !targetToken) return;
 
-            // 1. Convertir pies a casillas/píxeles
             const gridSize = canvas.grid.size;
             const feetPerGrid = canvas.grid.distance || 5;
             const casillas = distanciaPies / feetPerGrid;
 
-            // 2. Cálculo vectorial del desplazamiento
             const originCenter = originToken.center;
             const targetCenter = targetToken.center;
             const dx = targetCenter.x - originCenter.x;
@@ -44,11 +96,9 @@ function registrarSocketAntua() {
 
             if (distancePixels === 0) return;
 
-            // Al ser distanciaPies negativo, la multiplicación invierte el vector y atrae al objetivo
             let newCenterX = targetCenter.x + (dx / distancePixels) * (gridSize * casillas);
             let newCenterY = targetCenter.y + (dy / distancePixels) * (gridSize * casillas);
 
-            // Evitar que al atraer el token termine solapándose sobre el atacante
             if (distanciaPies < 0) {
                 const minDistance = (originToken.w / 2) + (targetToken.w / 2);
                 const newDist = Math.hypot(newCenterX - originCenter.x, newCenterY - originCenter.y);
@@ -69,14 +119,12 @@ function registrarSocketAntua() {
             const finalCenterX = finalX + targetWidth / 2;
             const finalCenterY = finalY + targetHeight / 2;
 
-            // 3. Comprobar Límites del Mapa
             const d = canvas.dimensions;
             if (finalX < d.sceneX || finalY < d.sceneY || (finalX + targetWidth) > (d.sceneX + d.sceneWidth) || (finalY + targetHeight) > (d.sceneY + d.sceneHeight)) {
                 ui.notifications.warn(`${targetToken.name} no puede ser desplazado fuera del mapa.`);
                 return;
             }
 
-            // 4. Comprobar Colisiones con Muros
             let hasWallCollision = false;
             if (typeof targetToken.checkCollision === "function") {
                 hasWallCollision = targetToken.checkCollision({ x: finalCenterX, y: finalCenterY }, { type: "move", mode: "any" });
@@ -105,7 +153,6 @@ function registrarSocketAntua() {
                 return;
             }
 
-            // 5. Aplicar Movimiento
             if (game.user.isGM) {
                 await targetDoc.update({ x: finalX, y: finalY });
                 const accionTexto = distanciaPies > 0 ? "empujado" : "atraído";
@@ -113,15 +160,13 @@ function registrarSocketAntua() {
             }
         });
 
+        // 2. Registro de Pregunta de Reacción (Interponer Escudo)
+        globalThis.antuaQolSocket.register("pedirConfirmacionReaccionEscudo", pedirConfirmacionReaccionEscudo);
+
         globalThis.antuaQolRegistered = true;
-        console.log("dnd55-qol-features | Socket 'moverTokenDesplazamientoGM' listo.");
+        console.log("dnd55-qol-features | Sockets 'moverTokenDesplazamientoGM' y 'pedirConfirmacionReaccionEscudo' registrados.");
     }
 }
 
 Hooks.once("socketlib.ready", registrarSocketAntua);
 Hooks.once("ready", registrarSocketAntua);
-
-/*
-Lista la versión V0.0.11
-- Conjuro luz modificado y controlado.
-*/
