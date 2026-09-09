@@ -2,8 +2,12 @@ Hooks.once('init', () => {
     console.log('%cdnd5.5-qol-features-by-antua %c| ' + 'Módulo inicializado con éxito', 'color:#4BC470', 'color:#B3B3B3');
 });
 
-// Función de diálogo con temporizador de 20 segundos
-async function pedirConfirmacionReaccionEscudo(actorName) {
+// --------------------------------------------------------------------
+// FUNCIONES DE DIÁLOGO
+// --------------------------------------------------------------------
+
+// 1. Diálogo de confirmación genérico reutilizable desde cualquier macro
+async function pedirConfirmacionGenerica(titulo, mensajeHtml, tiempoSegundos = 20, botonConfirmarText = "Usar Reacción", botonCancelarText = "Ignorar") {
     return new Promise((resolve) => {
         let resolved = false;
         let timer = null;
@@ -17,50 +21,89 @@ async function pedirConfirmacionReaccionEscudo(actorName) {
             resolve(val);
         };
 
-        const promptTitle = "Interponer Escudo";
-        const promptContent = `
+        let timeLeft = tiempoSegundos;
+        let content = `
             <div style="text-align: center; padding: 4px;">
-                <p><strong>${actorName}</strong> ha superado la salvación de Destreza llevando un escudo.</p>
-                <p>¿Deseas gastar tu <strong>Reacción</strong> para no recibir ningún daño?</p>
-                <p style="font-size: 0.85em; color: #a0a0a0; margin-top: 8px;">
-                    Tiempo para responder: <strong id="escudo-timer-count" style="color: #e24f4f;">20</strong>s
-                </p>
+                ${mensajeHtml}
+                ${tiempoSegundos > 0 ? `<p style="font-size: 0.85em; color: #a0a0a0; margin-top: 8px;">Tiempo restante: <strong id="antua-generic-timer" style="color: #e24f4f;">${timeLeft}</strong>s</p>` : ''}
             </div>
         `;
 
-        let timeLeft = 20;
-        timer = setTimeout(() => {
-            if (dlg) dlg.close();
-            doResolve(false);
-        }, 20000);
+        if (tiempoSegundos > 0) {
+            timer = setTimeout(() => {
+                if (dlg) dlg.close();
+                doResolve(false);
+            }, tiempoSegundos * 1000);
 
-        interval = setInterval(() => {
-            timeLeft--;
-            const el = document.getElementById("escudo-timer-count");
-            if (el) el.innerText = timeLeft;
-            if (timeLeft <= 0) clearInterval(interval);
-        }, 1000);
+            interval = setInterval(() => {
+                timeLeft--;
+                const el = document.getElementById("antua-generic-timer");
+                if (el) el.innerText = timeLeft;
+                if (timeLeft <= 0) clearInterval(interval);
+            }, 1000);
+        }
 
         const dlg = new Dialog({
-            title: promptTitle,
-            content: promptContent,
+            title: titulo,
+            content: content,
             buttons: {
                 yes: { 
-                    label: "Usar Reacción", 
+                    icon: '<i class="fas fa-check"></i>',
+                    label: botonConfirmarText, 
                     callback: () => doResolve(true) 
                 },
                 no: { 
-                    label: "No usar", 
+                    icon: '<i class="fas fa-times"></i>',
+                    label: botonCancelarText, 
                     callback: () => doResolve(false) 
                 }
             },
-            default: "yes",
+            default: "no",
             close: () => doResolve(false)
         });
 
         dlg.render(true);
     });
 }
+
+// 2. Diálogo de escudo (mantenido para no romper retrocompatibilidad)
+async function pedirConfirmacionReaccionEscudo(actorName) {
+    return pedirConfirmacionGenerica(
+        "Interponer Escudo",
+        `<p><strong>${actorName}</strong> ha superado la salvación de Destreza llevando un escudo.</p><p>¿Deseas gastar tu <strong>Reacción</strong> para no recibir ningún daño?</p>`,
+        20,
+        "Usar Reacción",
+        "No usar"
+    );
+}
+
+// Función de gestión de recursos ejecutada de forma remota con privilegios de GM
+async function descontarRecursosGM(actorUuid, itemUuid = null, gastarReaccion = true) {
+    if (!game.user.isGM) return;
+    const actor = await fromUuid(actorUuid);
+    if (!actor) return;
+
+    // 1. Descontar uso del ítem si se proporciona el UUID
+    if (itemUuid) {
+        const item = await fromUuid(itemUuid);
+        if (item) {
+            const usosGastados = parseInt(item.system.uses?.spent) || 0;
+            await item.update({ "system.uses.spent": usosGastados + 1 });
+        }
+    }
+
+    // 2. Marcar la Reacción como gastada (Midi-QOL + Sistema D&D5e)
+    if (gastarReaccion) {
+        if (typeof MidiQOL !== "undefined" && MidiQOL.setReactionUsed) {
+            await MidiQOL.setReactionUsed(actor);
+        }
+        await actor.update({ "system.attributes.reaction": false });
+    }
+}
+
+// --------------------------------------------------------------------
+// REGISTRO DE SOCKETS
+// --------------------------------------------------------------------
 
 function registrarSocketAntua() {
     if (typeof socketlib === "undefined") return;
@@ -72,7 +115,7 @@ function registrarSocketAntua() {
     }
 
     if (globalThis.antuaQolSocket && !globalThis.antuaQolRegistered) {
-        // 1. Registro de Desplazamiento
+        // Registro de Mover Token
         globalThis.antuaQolSocket.register("moverTokenDesplazamientoGM", async (originUuid, targetUuid, distanciaPies = 5) => {
             const originDoc = await fromUuid(originUuid);
             const targetDoc = await fromUuid(targetUuid);
@@ -160,11 +203,13 @@ function registrarSocketAntua() {
             }
         });
 
-        // 2. Registro de Pregunta de Reacción (Interponer Escudo)
+        // Registro de Sockets de Diálogo y Recursos
         globalThis.antuaQolSocket.register("pedirConfirmacionReaccionEscudo", pedirConfirmacionReaccionEscudo);
+        globalThis.antuaQolSocket.register("pedirConfirmacionGenerica", pedirConfirmacionGenerica);
+        globalThis.antuaQolSocket.register("descontarRecursosGM", descontarRecursosGM);
 
         globalThis.antuaQolRegistered = true;
-        console.log("dnd55-qol-features | Sockets 'moverTokenDesplazamientoGM' y 'pedirConfirmacionReaccionEscudo' registrados.");
+        console.log("dnd55-qol-features | Sockets 'moverTokenDesplazamientoGM', 'pedirConfirmacionGenerica' y 'descontarRecursosGM' registrados.");
     }
 }
 
