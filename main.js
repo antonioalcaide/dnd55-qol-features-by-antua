@@ -3,7 +3,7 @@ Hooks.once('init', () => {
 });
 
 // --------------------------------------------------------------------
-// FUNCIONES DE DIÁLOGO
+// FUNCIONES DE DIÁLOGO Y GESTIÓN
 // --------------------------------------------------------------------
 
 // 1. Diálogo de confirmación genérico reutilizable desde cualquier macro
@@ -66,7 +66,7 @@ async function pedirConfirmacionGenerica(titulo, mensajeHtml, tiempoSegundos = 2
     });
 }
 
-// 2. Diálogo de escudo (mantenido para no romper retrocompatibilidad)
+// 2. Diálogo de escudo (mantenido para retrocompatibilidad)
 async function pedirConfirmacionReaccionEscudo(actorName) {
     return pedirConfirmacionGenerica(
         "Interponer Escudo",
@@ -77,13 +77,13 @@ async function pedirConfirmacionReaccionEscudo(actorName) {
     );
 }
 
-// Función de gestión de recursos ejecutada de forma remota con privilegios de GM
+// 3. Gestión de recursos ejecutada de forma remota con privilegios de GM
 async function descontarRecursosGM(actorUuid, itemUuid = null, gastarReaccion = true) {
     if (!game.user.isGM) return;
     const actor = await fromUuid(actorUuid);
     if (!actor) return;
 
-    // 1. Descontar uso del ítem si se proporciona el UUID
+    // Descontar uso del ítem si se proporciona el UUID
     if (itemUuid) {
         const item = await fromUuid(itemUuid);
         if (item) {
@@ -92,12 +92,21 @@ async function descontarRecursosGM(actorUuid, itemUuid = null, gastarReaccion = 
         }
     }
 
-    // 2. Marcar la Reacción como gastada (Midi-QOL + Sistema D&D5e)
+    // Marcar la Reacción como gastada (Midi-QOL + Sistema D&D5e)
     if (gastarReaccion) {
         if (typeof MidiQOL !== "undefined" && MidiQOL.setReactionUsed) {
             await MidiQOL.setReactionUsed(actor);
         }
         await actor.update({ "system.attributes.reaction": false });
+    }
+}
+
+// 4. Mover o actualizar un token arbitrario como GM (resuelve restricción de permisos en jugadores)
+async function moverTokenGM({ tokenUuid, updateData }) {
+    if (!game.user.isGM) return;
+    const doc = await fromUuid(tokenUuid);
+    if (doc) {
+        return await doc.update(updateData);
     }
 }
 
@@ -115,7 +124,13 @@ function registrarSocketAntua() {
     }
 
     if (globalThis.antuaQolSocket && !globalThis.antuaQolRegistered) {
-        // Registro de Mover Token
+        // Registro de funciones de socket genéricas
+        globalThis.antuaQolSocket.register("pedirConfirmacionReaccionEscudo", pedirConfirmacionReaccionEscudo);
+        globalThis.antuaQolSocket.register("pedirConfirmacionGenerica", pedirConfirmacionGenerica);
+        globalThis.antuaQolSocket.register("descontarRecursosGM", descontarRecursosGM);
+        globalThis.antuaQolSocket.register("moverTokenGM", moverTokenGM);
+
+        // Registro de Mover Token por Desplazamiento (Empujar / Atraer)
         globalThis.antuaQolSocket.register("moverTokenDesplazamientoGM", async (originUuid, targetUuid, distanciaPies = 5) => {
             const originDoc = await fromUuid(originUuid);
             const targetDoc = await fromUuid(targetUuid);
@@ -203,13 +218,8 @@ function registrarSocketAntua() {
             }
         });
 
-        // Registro de Sockets de Diálogo y Recursos
-        globalThis.antuaQolSocket.register("pedirConfirmacionReaccionEscudo", pedirConfirmacionReaccionEscudo);
-        globalThis.antuaQolSocket.register("pedirConfirmacionGenerica", pedirConfirmacionGenerica);
-        globalThis.antuaQolSocket.register("descontarRecursosGM", descontarRecursosGM);
-
         globalThis.antuaQolRegistered = true;
-        console.log("dnd55-qol-features | Sockets 'moverTokenDesplazamientoGM', 'pedirConfirmacionGenerica' y 'descontarRecursosGM' registrados.");
+        console.log("dnd55-qol-features | Sockets registrados correctamente ('moverTokenGM', 'moverTokenDesplazamientoGM', 'pedirConfirmacionGenerica', 'descontarRecursosGM').");
     }
 }
 
