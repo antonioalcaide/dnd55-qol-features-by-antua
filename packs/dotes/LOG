@@ -1,14 +1,14 @@
-2026/09/10-11:09:54.463 40a4 Recovering log #190
-2026/09/10-11:09:54.466 40a4 Delete type=0 #190
-2026/09/10-11:09:54.466 40a4 Delete type=3 #188
-2026/09/10-12:44:32.403 1d28 Level-0 table #195: started
-2026/09/10-12:44:32.406 1d28 Level-0 table #195: 15689 bytes OK
-2026/09/10-12:44:32.408 1d28 Delete type=0 #193
-2026/09/10-12:44:32.411 1d28 Manual compaction at level-0 from '!folders!DKtBi0obbUdhZF3C' @ 72057594037927935 : 1 .. '!items.effects!lFf1BVC0fLUsKpf2.aMglSTWmAWZXXACR' @ 0 : 0; will stop at '!items.effects!aZNLvQqBkzNqxOqq.kZZPv1qoeE06KxSf' @ 70 : 1
-2026/09/10-12:44:32.411 1d28 Compacting 1@0 + 1@1 files
-2026/09/10-12:44:32.416 1d28 Generated table #196@0: 16 keys, 33897 bytes
-2026/09/10-12:44:32.416 1d28 Compacted 1@0 + 1@1 files => 33897 bytes
-2026/09/10-12:44:32.418 1d28 compacted to: files[ 0 1 0 0 0 0 0 ]
-2026/09/10-12:44:32.418 1d28 Delete type=2 #137
-2026/09/10-12:44:32.418 1d28 Delete type=2 #195
-2026/09/10-12:44:32.420 1d28 Manual compaction at level-0 from '!items.effects!aZNLvQqBkzNqxOqq.kZZPv1qoeE06KxSf' @ 70 : 1 .. '!items.effects!lFf1BVC0fLUsKpf2.aMglSTWmAWZXXACR' @ 0 : 0; will stop at (end)
+2026/09/10-16:26:39.202 40a4 Recovering log #207
+2026/09/10-16:26:39.207 40a4 Delete type=0 #207
+2026/09/10-16:26:39.207 40a4 Delete type=3 #205
+2026/09/10-16:38:12.580 1d28 Level-0 table #212: started
+2026/09/10-16:38:12.584 1d28 Level-0 table #212: 19994 bytes OK
+2026/09/10-16:38:12.585 1d28 Delete type=0 #210
+2026/09/10-16:38:12.585 1d28 Manual compaction at level-0 from '!folders!DKtBi0obbUdhZF3C' @ 72057594037927935 : 1 .. '!items.effects!lFf1BVC0fLUsKpf2.aMglSTWmAWZXXACR' @ 0 : 0; will stop at '!items.effects!jabNuKRhS9VMvE6G.uvZy4Zzi0oPd54qs' @ 74 : 1
+2026/09/10-16:38:12.585 1d28 Compacting 1@0 + 1@1 files
+2026/09/10-16:38:12.590 1d28 Generated table #213@0: 18 keys, 40292 bytes
+2026/09/10-16:38:12.590 1d28 Compacted 1@0 + 1@1 files => 40292 bytes
+2026/09/10-16:38:12.591 1d28 compacted to: files[ 0 1 0 0 0 0 0 ]
+2026/09/10-16:38:12.591 1d28 Delete type=2 #196
+2026/09/10-16:38:12.591 1d28 Delete type=2 #212
+2026/09/10-16:38:12.595 1d28 Manual compaction at level-0 from '!items.effects!jabNuKRhS9VMvE6G.uvZy4Zzi0oPd54qs' @ 74 : 1 .. '!items.effects!lFf1BVC0fLUsKpf2.aMglSTWmAWZXXACR' @ 0 : 0; will stop at (end)
