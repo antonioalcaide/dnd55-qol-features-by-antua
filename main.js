@@ -1,10 +1,57 @@
+// Version: 1.1.0 - dnd55-qol-features-by-antua (Foundry V14 / DnD5e v4+)
+
 Hooks.once('init', () => {
     console.log('%cdnd5.5-qol-features-by-antua %c| ' + 'Módulo inicializado con éxito', 'color:#4BC470', 'color:#B3B3B3');
 });
 
 // --------------------------------------------------------------------
-// FUNCIONES DE DIÁLOGO Y GESTIÓN DE RECURSOS
+// FUNCIONES DE DIÁLOGO, GESTIÓN DE RECURSOS Y NOTIFICACIONES DE CHAT
 // --------------------------------------------------------------------
+
+/**
+ * Genera y envía una tarjeta de notificación en el chat con formato estandarizado (70x70px avatar).
+ * @param {Object} data
+ * @param {string} data.title - Título de la tarjeta.
+ * @param {string} data.contentHtml - HTML o texto del cuerpo de la notificación.
+ * @param {string} [data.icon] - Ruta de la imagen/icono.
+ * @param {string} [data.actorUuid] - UUID o ID del actor origen para el speaker del mensaje.
+ */
+async function enviarNotificacionChatGM({ title, contentHtml, icon, actorUuid }) {
+    if (!game.user.isGM) return;
+
+    let actorDoc = null;
+    if (actorUuid) {
+        actorDoc = (await fromUuid(actorUuid)) || game.actors.get(actorUuid);
+    }
+
+    const cardIcon = icon || actorDoc?.img || "icons/svg/mystery-man.svg";
+    const cardTitle = title || "Notificación de Efecto";
+
+    const chatContent = `
+        <div class="dnd5e2 chat-card" style="position: relative; margin-top: 25px; border: 1px solid #7a200d; border-radius: 8px; background: #f8f4f1; box-shadow: 0 2px 5px rgba(0,0,0,0.15);">
+            <!-- Icono superpuesto de 70x70px -->
+            <div style="position: absolute; top: -20px; left: 10px; width: 70px; height: 70px; border-radius: 50%; border: 2px solid #7a200d; overflow: hidden; background: #fff; box-shadow: 0 3px 6px rgba(0,0,0,0.3); z-index: 10;">
+                <img src="${cardIcon}" style="width: 100%; height: 100%; object-fit: cover; border: none;"/>
+            </div>
+            
+            <!-- Cabecera ajustada al margen del icono de 70px -->
+            <div style="padding: 8px 12px 6px 90px; border-bottom: 1px solid rgba(122, 32, 13, 0.25); min-height: 45px; display: flex; align-items: center;">
+                <h3 style="margin: 0; font-family: 'Roboto', sans-serif; font-size: 1.1em; font-weight: bold; color: #7a200d; line-height: 1.1; width: 100%;">${cardTitle}</h3>
+            </div>
+            
+            <!-- Contenido dinámico de la tarjeta -->
+            <div class="card-content" style="padding: 10px 12px 10px 14px; font-size: 0.9em; line-height: 1.5; color: #222;">
+                ${contentHtml}
+            </div>
+        </div>
+    `;
+
+    await ChatMessage.create({
+        user: game.user.id,
+        speaker: actorDoc ? ChatMessage.getSpeaker({ actor: actorDoc }) : undefined,
+        content: chatContent
+    });
+}
 
 /**
  * Muestra un diálogo modal con temporizador en el cliente del usuario objetivo.
@@ -304,9 +351,10 @@ function registrarSocketAntua() {
         globalThis.antuaQolSocket.register("moverTokenGM", moverTokenGM);
         globalThis.antuaQolSocket.register("moverTokenDesplazamientoGM", moverTokenDesplazamientoGM);
         globalThis.antuaQolSocket.register("intercambiarIniciativaGM", intercambiarIniciativaGM);
+        globalThis.antuaQolSocket.register("enviarNotificacionChatGM", enviarNotificacionChatGM);
 
         globalThis.antuaQolRegistered = true;
-        console.log("dnd55-qol-features | Sockets registrados correctamente ('pedirConfirmacionGenerica', 'descontarRecursosGM', 'reponerRecursosGM', 'moverTokenGM', 'moverTokenDesplazamientoGM', 'intercambiarIniciativaGM').");
+        console.log("dnd55-qol-features | Sockets registrados correctamente ('pedirConfirmacionGenerica', 'descontarRecursosGM', 'reponerRecursosGM', 'moverTokenGM', 'moverTokenDesplazamientoGM', 'intercambiarIniciativaGM', 'enviarNotificacionChatGM').");
     }
 }
 
