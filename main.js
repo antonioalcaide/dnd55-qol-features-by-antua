@@ -1,7 +1,7 @@
-// Version: 1.1.0 - dnd55-qol-features-by-antua (Foundry V14 / DnD5e v4+)
+// Version: 1.4.0 - dnd55-qol-features-by-antua (Foundry V14 / DnD5e v4+)
 
 Hooks.once('init', () => {
-    console.log('%cdnd5.5-qol-features-by-antua %c| ' + 'Módulo inicializado con éxito', 'color:#4BC470', 'color:#B3B3B3');
+    console.log('%cdnd5.5-qol-features-by-antua %c| ' + 'Módulo inicializado con éxito (v1.4.0)', 'color:#4BC470', 'color:#B3B3B3');
 });
 
 // --------------------------------------------------------------------
@@ -10,11 +10,6 @@ Hooks.once('init', () => {
 
 /**
  * Genera y envía una tarjeta de notificación en el chat con formato estandarizado (70x70px avatar).
- * @param {Object} data
- * @param {string} data.title - Título de la tarjeta.
- * @param {string} data.contentHtml - HTML o texto del cuerpo de la notificación.
- * @param {string} [data.icon] - Ruta de la imagen/icono.
- * @param {string} [data.actorUuid] - UUID o ID del actor origen para el speaker del mensaje.
  */
 async function enviarNotificacionChatGM({ title, contentHtml, icon, actorUuid }) {
     if (!game.user.isGM) return;
@@ -129,7 +124,7 @@ async function pedirConfirmacionReaccionEscudo(actorName) {
 }
 
 /**
- * Descuenta un uso o consumo de reacción desde el cliente GM (soporta D&D 5e v4 Actividades e Ítems legacy).
+ * Descuenta un uso o consumo de reacción desde el cliente GM.
  */
 async function descontarRecursosGM(actorUuid, itemUuid = null, gastarReaccion = true, activityId = null) {
     if (!game.user.isGM) return;
@@ -207,6 +202,59 @@ async function reponerRecursosGM(actorUuid, itemUuid = null, activityId = null) 
                 if (spent > 0) {
                     await item.update({ "system.uses.spent": Math.max(0, spent - 1) });
                 }
+            }
+        }
+    }
+}
+
+/**
+ * Conmuta (restaura o descuenta) un recurso/conjuro y actualiza la tarjeta de chat sincronizando a todos los jugadores.
+ */
+async function conmutarRecursoGM({ actorUuid, slotKey, type = "spell", isConsumed, messageId }) {
+    if (!game.user.isGM) return;
+
+    const actorDoc = (await fromUuid(actorUuid)) || game.actors.get(actorUuid);
+    if (!actorDoc) return;
+
+    const restaurar = isConsumed; // Si estaba consumido (true), la acción conmuta a restaurar
+
+    // 1. Modificar el recurso en la ficha del personaje
+    if (type === "spell") {
+        const isPact = slotKey === "pact";
+        const path = isPact ? "system.spells.pact.value" : `system.spells.${slotKey}.value`;
+        const current = isPact ? actorDoc.system.spells.pact.value : (actorDoc.system.spells[slotKey]?.value || 0);
+        const max = isPact ? actorDoc.system.spells.pact.max : (actorDoc.system.spells[slotKey]?.max || current + 1);
+
+        const newValue = restaurar ? Math.min(max, current + 1) : Math.max(0, current - 1);
+        await actorDoc.update({ [path]: newValue });
+    }
+
+    const estadoTexto = restaurar ? "restaurado" : "consumido";
+    ui.notifications.info(`Recurso (${slotKey}) ${estadoTexto} para ${actorDoc.name}.`);
+
+    // 2. Manipulación directa del DOM de la tarjeta para garantizar cambio de color y estado sincronizado
+    if (messageId) {
+        const chatMsg = game.messages.get(messageId);
+        if (chatMsg) {
+            const container = document.createElement("div");
+            container.innerHTML = chatMsg.content;
+
+            const btn = container.querySelector(".toggle-spell-slot-btn, .antua-toggle-resource-btn");
+            if (btn) {
+                const newConsumedState = !restaurar;
+                btn.setAttribute("data-consumed", newConsumedState.toString());
+
+                if (restaurar) {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Recurso: Restaurado (Consumir)';
+                    btn.style.background = "#065f46";
+                    btn.style.borderColor = "#10b981";
+                } else {
+                    btn.innerHTML = '<i class="fas fa-undo"></i> Recurso: Consumido (Restaurar)';
+                    btn.style.background = "#312e81";
+                    btn.style.borderColor = "#6366f1";
+                }
+
+                await chatMsg.update({ content: container.innerHTML });
             }
         }
     }
@@ -331,6 +379,49 @@ async function intercambiarIniciativaGM(data) {
 }
 
 // --------------------------------------------------------------------
+// LISTENERS DE INTERFAZ Y CHAT
+// --------------------------------------------------------------------
+
+Hooks.on("renderChatMessage", (message, html) => {
+    const buttons = html.find(".toggle-spell-slot-btn, .antua-toggle-resource-btn");
+    if (!buttons.length) return;
+
+    buttons.each(function () {
+        const btn = $(this);
+        const actorUuid = btn.data("actor-uuid");
+        
+        // Comprobar permisos: Visibilidad exclusiva para GM o Propietario del Actor
+        let actorDoc = actorUuid ? fromUuidSync(actorUuid) : null;
+        const canUse = game.user.isGM || (actorDoc && actorDoc.isOwner);
+
+        if (!canUse) {
+            btn.remove();
+            return;
+        }
+
+        btn.off("click").on("click", async function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const slotKey = btn.data("slot-key") || btn.data("key");
+            const type = btn.data("type") || "spell";
+            const isConsumed = btn.data("consumed") === true || btn.data("consumed") === "true";
+
+            if (globalThis.antuaQolSocket) {
+                btn.prop("disabled", true);
+                await globalThis.antuaQolSocket.executeAsGM("conmutarRecursoGM", {
+                    actorUuid,
+                    slotKey,
+                    type,
+                    isConsumed,
+                    messageId: message.id
+                });
+            }
+        });
+    });
+});
+
+// --------------------------------------------------------------------
 // REGISTRO DE SOCKETS (socketlib)
 // --------------------------------------------------------------------
 
@@ -348,13 +439,14 @@ function registrarSocketAntua() {
         globalThis.antuaQolSocket.register("pedirConfirmacionGenerica", pedirConfirmacionGenerica);
         globalThis.antuaQolSocket.register("descontarRecursosGM", descontarRecursosGM);
         globalThis.antuaQolSocket.register("reponerRecursosGM", reponerRecursosGM);
+        globalThis.antuaQolSocket.register("conmutarRecursoGM", conmutarRecursoGM);
         globalThis.antuaQolSocket.register("moverTokenGM", moverTokenGM);
         globalThis.antuaQolSocket.register("moverTokenDesplazamientoGM", moverTokenDesplazamientoGM);
         globalThis.antuaQolSocket.register("intercambiarIniciativaGM", intercambiarIniciativaGM);
         globalThis.antuaQolSocket.register("enviarNotificacionChatGM", enviarNotificacionChatGM);
 
         globalThis.antuaQolRegistered = true;
-        console.log("dnd55-qol-features | Sockets registrados correctamente ('pedirConfirmacionGenerica', 'descontarRecursosGM', 'reponerRecursosGM', 'moverTokenGM', 'moverTokenDesplazamientoGM', 'intercambiarIniciativaGM', 'enviarNotificacionChatGM').");
+        console.log("dnd55-qol-features | Sockets registrados correctamente ('pedirConfirmacionGenerica', 'descontarRecursosGM', 'reponerRecursosGM', 'conmutarRecursoGM', 'moverTokenGM', 'moverTokenDesplazamientoGM', 'intercambiarIniciativaGM', 'enviarNotificacionChatGM').");
     }
 }
 
