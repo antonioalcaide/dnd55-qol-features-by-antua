@@ -1,7 +1,7 @@
-2026/09/19-11:04:25.584 91a4 Recovering log #350
-2026/09/19-11:04:25.590 91a4 Delete type=0 #350
-2026/09/19-11:04:25.590 91a4 Delete type=3 #348
-2026/09/19-21:16:40.580 c7d8 Level-0 table #355: started
-2026/09/19-21:16:40.580 c7d8 Level-0 table #355: 0 bytes OK
-2026/09/19-21:16:40.581 c7d8 Delete type=0 #353
-2026/09/19-21:16:40.587 c7d8 Manual compaction at level-0 from '!actors!7OfJadzFsrqe6vQx' @ 72057594037927935 : 1 .. '!actors.items.effects!VbDPhfNcmjLLIQHd.MKsd8jIhdH7Gl06W.XAJiw9N38Z1nd8ni' @ 0 : 0; will stop at (end)
+2026/09/19-22:10:41.688 91a4 Recovering log #362
+2026/09/19-22:10:41.695 91a4 Delete type=0 #362
+2026/09/19-22:10:41.695 91a4 Delete type=3 #360
+2026/09/20-13:44:07.671 c7d8 Level-0 table #367: started
+2026/09/20-13:44:07.671 c7d8 Level-0 table #367: 0 bytes OK
+2026/09/20-13:44:07.672 c7d8 Delete type=0 #365
+2026/09/20-13:44:07.678 c7d8 Manual compaction at level-0 from '!actors!7OfJadzFsrqe6vQx' @ 72057594037927935 : 1 .. '!actors.items.effects!VbDPhfNcmjLLIQHd.MKsd8jIhdH7Gl06W.XAJiw9N38Z1nd8ni' @ 0 : 0; will stop at (end)
