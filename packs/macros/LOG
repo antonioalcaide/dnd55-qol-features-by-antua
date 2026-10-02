@@ -1,14 +1,14 @@
-2026/09/28-21:46:09.970 d2e4 Recovering log #566
-2026/09/28-21:46:09.976 d2e4 Delete type=0 #566
-2026/09/28-21:46:09.976 d2e4 Delete type=3 #564
-2026/09/28-22:26:56.728 f548 Level-0 table #571: started
-2026/09/28-22:26:56.732 f548 Level-0 table #571: 47039 bytes OK
-2026/09/28-22:26:56.732 f548 Delete type=0 #569
-2026/09/28-22:26:56.738 f548 Manual compaction at level-0 from '!folders!460HOOpTWvdi5uaf' @ 72057594037927935 : 1 .. '!macros!mfRmsOzC59NNgk4W' @ 0 : 0; will stop at '!macros!gBOwn9rm0flMXDOP' @ 55 : 1
-2026/09/28-22:26:56.738 f548 Compacting 1@0 + 1@1 files
-2026/09/28-22:26:56.743 f548 Generated table #572@0: 23 keys, 70127 bytes
-2026/09/28-22:26:56.743 f548 Compacted 1@0 + 1@1 files => 70127 bytes
-2026/09/28-22:26:56.744 f548 compacted to: files[ 0 1 0 0 0 0 0 ]
-2026/09/28-22:26:56.744 f548 Delete type=2 #439
-2026/09/28-22:26:56.745 f548 Delete type=2 #571
-2026/09/28-22:26:56.746 f548 Manual compaction at level-0 from '!macros!gBOwn9rm0flMXDOP' @ 55 : 1 .. '!macros!mfRmsOzC59NNgk4W' @ 0 : 0; will stop at (end)
+2026/10/01-19:45:55.634 10318 Recovering log #672
+2026/10/01-19:45:55.641 10318 Delete type=0 #672
+2026/10/01-19:45:55.641 10318 Delete type=3 #670
+2026/10/02-18:04:14.804 f548 Level-0 table #678: started
+2026/10/02-18:04:14.809 f548 Level-0 table #678: 4322 bytes OK
+2026/10/02-18:04:14.815 f548 Delete type=0 #676
+2026/10/02-18:04:14.827 f548 Manual compaction at level-0 from '!folders!460HOOpTWvdi5uaf' @ 72057594037927935 : 1 .. '!macros!s7vdR3m25v1MK8sc' @ 0 : 0; will stop at '!macros!gBOwn9rm0flMXDOP' @ 91 : 1
+2026/10/02-18:04:14.827 f548 Compacting 1@0 + 1@1 files
+2026/10/02-18:04:14.833 f548 Generated table #679@0: 25 keys, 75420 bytes
+2026/10/02-18:04:14.833 f548 Compacted 1@0 + 1@1 files => 75420 bytes
+2026/10/02-18:04:14.839 f548 compacted to: files[ 0 1 0 0 0 0 0 ]
+2026/10/02-18:04:14.839 f548 Delete type=2 #674
+2026/10/02-18:04:14.839 f548 Delete type=2 #678
+2026/10/02-18:04:14.847 f548 Manual compaction at level-0 from '!macros!gBOwn9rm0flMXDOP' @ 91 : 1 .. '!macros!s7vdR3m25v1MK8sc' @ 0 : 0; will stop at (end)

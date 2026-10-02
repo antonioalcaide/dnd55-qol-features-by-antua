@@ -196,3 +196,64 @@ export async function conmutarRecursoGM({ actorUuid, slotKey, type = "spell", is
         }
     }
 }
+
+// scripts/resources.js
+
+export async function solicitarTiradaEscaparAgarreGM({ actorUuid, dc, effectLabel }) {
+    const DEBUG = true;
+    if (DEBUG) console.log("%c[AntuaQoL Debug] %cIniciando petición de escape de agarre para:", "color: #00ffaa; font-weight: bold;", "color: #ffffff;", actorUuid);
+
+    const actor = await fromUuid(actorUuid);
+    if (!actor) {
+        console.error("%c[AntuaQoL Error] %cNo se encontró el actor con UUID:", "color: #ff0000; font-weight: bold;", "color: #ffffff;", actorUuid);
+        return;
+    }
+
+    // Solicitud/Diálogo al jugador (o GM si es NPC)
+    const eleccion = await Dialog.wait({
+        title: `Escapar de: ${effectLabel}`,
+        content: `<p>Selecciona la prueba para intentar escapar (CD ${dc}):</p>`,
+        buttons: {
+            str: {
+                icon: '<i class="fas fa-fist-raised"></i>',
+                label: "Fuerza (Atletismo)",
+                callback: () => "ath"
+            },
+            dex: {
+                icon: '<i class="fas fa-running"></i>',
+                label: "Destreza (Acrobacias)",
+                callback: () => "acr"
+            }
+        },
+        default: "str"
+    });
+
+    if (!eleccion) return;
+
+    // Realizar la tirada de habilidad correspondiente
+    const roll = await actor.rollSkill(eleccion, { chatMessage: true });
+    
+    if (roll && roll.total >= dc) {
+        // Si supera la CD, eliminar el efecto del actor
+        const effect = actor.effects.find(e => e.label === effectLabel || e.name === effectLabel);
+        if (effect) {
+            await effect.delete();
+            if (DEBUG) console.log("%c[AntuaQoL Debug] %cEfecto de agarre eliminado con éxito.", "color: #00ffaa; font-weight: bold;", "color: #ffffff;");
+        }
+
+        // Notificación centralizada al chat según estándar del módulo
+        await globalThis.antuaQolSocket.executeAsGM("enviarNotificacionChatGM", {
+            title: `Escape Exitoso: ${effectLabel}`,
+            contentHtml: `<p><strong>${actor.name}</strong> ha conseguido liberarse del agarre superando la CD ${dc} con una tirada total de <strong>${roll.total}</strong>.</p>`,
+            icon: actor.img,
+            actorUuid: actor.uuid
+        });
+    } else {
+        await globalThis.antuaQolSocket.executeAsGM("enviarNotificacionChatGM", {
+            title: `Fallo al Escapar: ${effectLabel}`,
+            contentHtml: `<p><strong>${actor.name}</strong> ha fallado el intento de escape (Resultado: <strong>${roll ? roll.total : 0}</strong> vs CD ${dc}).</p>`,
+            icon: actor.img,
+            actorUuid: actor.uuid
+        });
+    }
+}
