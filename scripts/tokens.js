@@ -296,3 +296,75 @@ export async function reproducirFogonazoRelampago() {
         }
     }
 }
+
+export function registrarLimpiaReaccionesYBonus() {
+  const DEBUG = false;
+
+  if (DEBUG) {
+    console.log(
+      "%cD&D 5.5 QoL | Registrando limpiador de Reacción, Acción Adicional y Escudos",
+      "color: #00bfff; font-weight: bold;"
+    );
+  }
+
+  Hooks.on("updateCombat", async (combat, updateData, options, userId) => {
+    // Solo la instancia del GM ejecuta la eliminación para evitar duplicaciones
+    if (!game.user.isGM) return;
+
+    // Verificar si avanzó el turno o la ronda
+    const haCambiadoTurno = "turn" in updateData || "round" in updateData;
+    if (!haCambiadoTurno) return;
+
+    const combatienteActual = combat.combatant;
+    const actor = combatienteActual?.actor;
+    if (!actor) return;
+
+    if (DEBUG) {
+      console.log(
+        `%cD&D 5.5 QoL | Inicio de turno para: ${actor.name}`,
+        "color: #00ff00; font-weight: bold;"
+      );
+    }
+
+    // IDs estáticos de DnD5e v5+ / Midi-QOL
+    const idsEstaticos = ["dnd5ereaction000", "dnd5ebonus0000000"];
+
+    // Lista de nombres de efectos a limpiar en minúsculas
+    const nombresObjetivo = [
+      "reaction used",
+      "bonus action used",
+      "reacción usada",
+      "acción adicional usada",
+      "shield",
+      "escudo",
+      "imperceptible barrier",
+      "barrera imperceptible"
+    ];
+
+    // Statuses asociados a efectos de reacción o escudos
+    const statusesObjetivo = [
+      "reaction-used",
+      "bonus-action-used",
+      "shield"
+    ];
+
+    // Filtrar efectos activos en el actor
+    const efectosEncontrados = actor.effects.filter(e => {
+      const idCoincide = idsEstaticos.includes(e.id);
+      const nombreCoincide = e.name && nombresObjetivo.includes(e.name.toLowerCase());
+      const statusCoincide = e.statuses && Array.from(e.statuses).some(s => statusesObjetivo.includes(s));
+      
+      return idCoincide || nombreCoincide || statusCoincide;
+    });
+
+    for (const efecto of efectosEncontrados) {
+      if (DEBUG) {
+        console.log(
+          `%cD&D 5.5 QoL | Eliminando efecto "${efecto.name}" (ID: ${efecto.id}) de ${actor.name}`,
+          "color: #ffaa00; font-weight: bold;"
+        );
+      }
+      await efecto.delete();
+    }
+  });
+}

@@ -257,3 +257,116 @@ export async function solicitarTiradaEscaparAgarreGM({ actorUuid, dc, effectLabe
         });
     }
 }
+
+/**
+ * Solicita confirmación en el cliente del usuario objetivo para lanzar Escudo como reacción con cuenta atrás animada.
+ * @param {object} params
+ * @param {string} params.actorUuid - UUID del actor afectado.
+ * @param {string} params.itemAtacanteNombre - Nombre del conjuro o ítem atacante.
+ * @param {number} [params.timeoutMs=20000] - Tiempo límite en milisegundos.
+ * @returns {Promise<boolean>}
+ */
+export async function pedirConfirmacionReaccionEscudoConjuro({ actorUuid, itemAtacanteNombre, timeoutMs = 20000 }) {
+    console.log(`%c[AntuaQoL] | Iniciando diálogo de reacción con temporizador dinámico (${timeoutMs / 1000}s)`, "color: #00ffff; font-weight: bold;");
+
+    const actorObj = await fromUuid(actorUuid);
+    const actorName = actorObj?.name || "Tu personaje";
+
+    return new Promise((resolve) => {
+        let resuelto = false;
+        let appDialog = null;
+        let timerId = null;
+        let intervalId = null;
+        let segundosRestantes = Math.ceil(timeoutMs / 1000);
+
+        // Función para limpiar de memoria los temporizadores
+        const limpiarTemporizadores = () => {
+            if (timerId) clearTimeout(timerId);
+            if (intervalId) clearInterval(intervalId);
+        };
+
+        const resolverRespuesta = (valor) => {
+            if (!resuelto) {
+                resuelto = true;
+                limpiarTemporizadores();
+                resolve(valor);
+            }
+        };
+
+        // 1. Temporizador de expiración principal (20 segundos)
+        timerId = setTimeout(() => {
+            if (!resuelto) {
+                console.warn("%c[AntuaQoL] | Tiempo agotado sin respuesta. Cerrando ventana y rechazando Escudo.", "color: #ffaa00; font-weight: bold;");
+                if (appDialog && typeof appDialog.close === "function") {
+                    appDialog.close();
+                }
+                resolverRespuesta(false);
+            }
+        }, timeoutMs);
+
+        // 2. Contenido HTML con nodo objetivo para la animación
+        const htmlContent = `
+            <p><strong>${actorName}</strong> va a recibir daño de <em>${itemAtacanteNombre || "Proyectil Mágico"}</em>.</p>
+            <p>¿Quieres usar tu reacción y un espacio de conjuro para lanzar <strong>Escudo</strong> e inmunizarte al daño?</p>
+            <p style="text-align: right; color: #aaa; font-size: 0.85em; margin-top: 10px;">
+                <i class="fa-solid fa-hourglass-half fa-spin"></i> Tiempo límite: <strong id="antua-countdown-timer" style="color: #ffaa00;">${segundosRestantes}</strong> segundos
+            </p>
+        `;
+
+        // 3. Instanciar la ventana emergente e iniciar el intervalo de descuento en el render
+        appDialog = new Dialog({
+            title: "🛡️ Reacción: Escudo",
+            content: htmlContent,
+            buttons: {
+                yes: {
+                    icon: '<i class="fas fa-shield-halved"></i>',
+                    label: "Lanzar Escudo",
+                    callback: () => resolverRespuesta(true)
+                },
+                no: {
+                    icon: '<i class="fas fa-xmark"></i>',
+                    label: "Recibir daño",
+                    callback: () => resolverRespuesta(false)
+                }
+            },
+            default: "yes",
+            render: (html) => {
+                const rootEl = html instanceof HTMLElement ? html : html[0];
+                const timerSpan = rootEl?.querySelector("#antua-countdown-timer");
+
+                // Actualizar el DOM cada 1000 ms (1 segundo)
+                intervalId = setInterval(() => {
+                    segundosRestantes--;
+                    if (timerSpan) {
+                        timerSpan.textContent = Math.max(0, segundosRestantes);
+                    }
+                    if (segundosRestantes <= 0) {
+                        clearInterval(intervalId);
+                    }
+                }, 1000);
+            },
+            close: () => resolverRespuesta(false)
+        });
+
+        appDialog.render(true);
+    });
+}
+
+/**
+ * Lanza un conjuro/ítem desde el cliente del propietario remoto.
+ * @param {object} params
+ * @param {string} params.itemUuid - UUID del ítem a ejecutar.
+ */
+export async function usarItemRemoto({ itemUuid }) {
+    const itemObj = await fromUuid(itemUuid);
+    if (itemObj) {
+        await itemObj.use({}, { configureDialog: false });
+    }
+}
+
+// En scripts/resources.js
+export async function curarActorGM({ actorUuid, amount }) {
+  const actor = await fromUuid(actorUuid);
+  if (!actor) return;
+  return await actor.applyDamage([{ value: amount, type: "healing" }]);
+}

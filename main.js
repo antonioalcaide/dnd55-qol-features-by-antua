@@ -1,25 +1,32 @@
 /**
- * DnD 5.5 QoL Features by Antua (v1.9.1)
+ * DnD 5.5 QoL Features by Antua (v2.1.0)
  * Archivo principal (main.js)
  */
 
 import { inicializarListenersChat } from "./scripts/chat.js";
 import { registrarSocketAntua } from "./scripts/sockets.js";
 import { registrarHookReaccionesDefensivas } from "./scripts/combat.js";
+import { registrarLimpiaReaccionesYBonus } from "./scripts/tokens.js";
 
 Hooks.once("init", () => {
-    console.log("%cdnd5.5-qol-features-by-antua %c| Módulo inicializado con éxito (v1.9.1)", "color:lime", "color:#B3B3B3");
+    console.log("%cdnd5.5-qol-features-by-antua %c| Módulo inicializado con éxito (v2.1.0)", "color:lime", "color:#B3B3B3");
 });
 
-Hooks.once("socketlib.ready", registrarSocketAntua);
-Hooks.once("ready", registrarSocketAntua);
+Hooks.once("socketlib.ready", () => {
+    registrarSocketAntua();
+});
 
 Hooks.on("renderChatMessage", (message, html) => {
     inicializarListenersChat(message, html);
 });
 
 Hooks.once("ready", () => {
-    if (game.modules.get("midi-qol")?.active) {
-        registrarHookReaccionesDefensivas();
-    }
+    // Asegurar registro de sockets en caso de que socketlib.ready haya cargado antes o después
+    registrarSocketAntua();
+
+    // Registrar los interceptores de Hooks para Reacciones Defensivas, Movimiento y Turnos
+    registrarHookReaccionesDefensivas();
+
+    // Registrar el limpiador de Reacciones, Acciones Adicionales y Escudos al inicio de turno
+    registrarLimpiaReaccionesYBonus();
 });
