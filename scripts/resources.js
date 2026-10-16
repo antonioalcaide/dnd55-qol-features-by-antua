@@ -489,6 +489,7 @@ export async function pedirConfirmacionPalabrasCortantesData(data) {
  * @param {MidiQOL.Workflow} workflow - Workflow activo de Midi-QOL.
  */
 export async function procesarPalabrasCortantes(workflow) {
+    const DEBUG = false;
     if (!workflow || !workflow.token) return;
 
     const atacanteToken = workflow.token;
