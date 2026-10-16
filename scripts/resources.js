@@ -370,3 +370,32 @@ export async function curarActorGM({ actorUuid, amount }) {
   if (!actor) return;
   return await actor.applyDamage([{ value: amount, type: "healing" }]);
 }
+
+/**
+ * Aplica un ActiveEffect a un actor objetivo con permisos de GM.
+ */
+export async function aplicarEfectoActivoGM({ actorUuid, effectData }) {
+  const doc = await fromUuid(actorUuid);
+  const targetActor = doc?.actor || doc;
+  if (!targetActor) return null;
+  const [created] = await targetActor.createEmbeddedDocuments("ActiveEffect", [effectData]);
+  return created?.uuid;
+}
+
+/**
+ * Elimina el efecto de marca anterior de un objetivo con permisos de GM.
+ */
+export async function eliminarEfectoActivoGM({ actorUuid, effectName, casterUuid }) {
+  if (!actorUuid) return false;
+  const doc = await fromUuid(actorUuid);
+  const targetActor = doc?.actor || doc;
+  if (!targetActor) return false;
+  const effect = targetActor.effects.find(e => 
+    (e.name === effectName || e.flags?.["dnd55-qol-features-by-antua"]?.casterUuid === casterUuid)
+  );
+  if (effect) {
+    await effect.delete();
+    return true;
+  }
+  return false;
+}

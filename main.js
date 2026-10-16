@@ -16,8 +16,9 @@ Hooks.once("socketlib.ready", () => {
     registrarSocketAntua();
 });
 
-Hooks.on("renderChatMessage", (message, html) => {
-    inicializarListenersChat(message, html);
+Hooks.on("renderChatMessageHTML", (message, html, data) => {
+  // Si la lógica interna dentro del hook utiliza sintaxis de jQuery (ej: html.find()):
+  const $html = $(html);
 });
 
 Hooks.once("ready", () => {
