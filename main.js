@@ -7,6 +7,7 @@ import { inicializarListenersChat } from "./scripts/chat.js";
 import { registrarSocketAntua } from "./scripts/sockets.js";
 import { registrarHookReaccionesDefensivas } from "./scripts/combat.js";
 import { registrarLimpiaReaccionesYBonus } from "./scripts/tokens.js";
+import { procesarPalabrasCortantes } from "./scripts/resources.js";
 
 Hooks.once("init", () => {
     console.log("%cdnd5.5-qol-features-by-antua %c| Módulo inicializado con éxito (v2.1.0)", "color:lime", "color:#B3B3B3");
@@ -30,4 +31,8 @@ Hooks.once("ready", () => {
 
     // Registrar el limpiador de Reacciones, Acciones Adicionales y Escudos al inicio de turno
     registrarLimpiaReaccionesYBonus();
+});
+
+Hooks.on("midi-qol.preCheckHits", async (workflow) => {
+    await procesarPalabrasCortantes(workflow);
 });
